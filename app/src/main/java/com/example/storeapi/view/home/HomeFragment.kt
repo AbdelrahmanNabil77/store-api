@@ -43,12 +43,19 @@ class HomeFragment : Fragment() {
             ViewModelFactory(productsRepository, application)
         viewModel =
             ViewModelProvider(this, viewModelProviderFactory).get(ProductsViewModel::class.java)
+        setObservers()
+        setListeners()
+        viewModel.getProductsList()
+    }
+
+    fun setObservers(){
         viewModel.productsLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
                     binding.progressBar.hide()
                     binding.tvError.hide()
                     binding.ivError.hide()
+                    binding.recyclerViewHome.show()
                     it.data?.let {
                         homeRecyclerViewAdapter = HomeRecyclerViewAdapter(it,
                             HomeRecyclerViewAdapter.ProductClickListener {
@@ -64,14 +71,22 @@ class HomeFragment : Fragment() {
                     binding.ivError.show()
                     binding.tvError.text=it.message
                     binding.tvError.show()
+                    binding.recyclerViewHome.hide()
                 }
                 is Resource.Loading -> {
+                    binding.tvError.hide()
+                    binding.ivError.hide()
                     binding.progressBar.show()
                 }
             }
         }
-        viewModel.getProductsList()
+    }
 
+    fun setListeners(){
+        binding.swipeRefresh.setOnRefreshListener {
+            binding.swipeRefresh.isRefreshing=false
+            viewModel.getProductsList()
+        }
     }
 
     fun View.show(){
