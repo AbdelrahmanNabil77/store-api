@@ -47,6 +47,8 @@ class HomeFragment : Fragment() {
             when (it) {
                 is Resource.Success -> {
                     binding.progressBar.hide()
+                    binding.tvError.hide()
+                    binding.ivError.hide()
                     it.data?.let {
                         homeRecyclerViewAdapter = HomeRecyclerViewAdapter(it,
                             HomeRecyclerViewAdapter.ProductClickListener {
@@ -59,7 +61,9 @@ class HomeFragment : Fragment() {
                 }
                 is Resource.Error -> {
                     binding.progressBar.hide()
-                    Log.d("assassin", "error: ${it.message}")
+                    binding.ivError.show()
+                    binding.tvError.text=it.message
+                    binding.tvError.show()
                 }
                 is Resource.Loading -> {
                     binding.progressBar.show()
