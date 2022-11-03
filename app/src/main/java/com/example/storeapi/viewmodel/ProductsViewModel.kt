@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.storeapi.R
 import com.example.storeapi.datalayer.repository.ProductsRepository
 import com.example.storeapi.model.Product
 import com.example.storeapi.utils.AppUtils.checkForInternet
@@ -29,12 +30,12 @@ class ProductsViewModel(
                     _productsLiveData.postValue(Resource.Success(it))
                 }
             } else {
-                _productsLiveData.postValue(Resource.Error("No internet connection"))
+                _productsLiveData.postValue(Resource.Error(app.getString(R.string.no_internet_error)))
             }
         } catch (t: Throwable) {
             when (t) {
-                is IOException -> _productsLiveData.postValue(Resource.Error("Network Failure"))
-                else -> _productsLiveData.postValue(Resource.Error("Error: message ${t.message}\ncause ${t.cause}"))
+                is IOException -> _productsLiveData.postValue(Resource.Error(app.getString(R.string.network_failure)))
+                else -> _productsLiveData.postValue(Resource.Error("${app.getString(R.string.error_msg)} ${t.message}"))
             }
         }
     }
