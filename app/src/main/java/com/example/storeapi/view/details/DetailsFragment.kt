@@ -1,4 +1,4 @@
-package com.example.storeapi.view
+package com.example.storeapi.view.details
 
 import android.os.Bundle
 import android.view.LayoutInflater
