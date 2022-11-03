@@ -1,18 +1,24 @@
 package com.example.storeapi.view
 
+import android.app.Application
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.storeapi.R
-import com.example.storeapi.databinding.FragmentDetailsBinding
 import com.example.storeapi.databinding.FragmentHomeBinding
+import com.example.storeapi.datalayer.repository.ProductsRepository
+import com.example.storeapi.utils.Resource
+import com.example.storeapi.viewmodel.ProductsViewModel
+import com.example.storeapi.viewmodel.ViewModelFactory
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
+    lateinit var viewModel: ProductsViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,4 +33,28 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val application = requireActivity().application as Application
+        val productsRepository = ProductsRepository()
+        val viewModelProviderFactory =
+            ViewModelFactory(productsRepository, application)
+        viewModel =
+            ViewModelProvider(this, viewModelProviderFactory).get(ProductsViewModel::class.java)
+        viewModel.productsLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    Log.d("assassin", "done: ${it.data}")
+                }
+                is Resource.Error -> {
+                    Log.d("assassin", "error: ${it.message}")
+                }
+                is Resource.Loading -> {
+                    Log.d("assassin", "loading: ${it.data}")
+                }
+            }
+        }
+        viewModel.getProductsList()
+
+    }
 }
